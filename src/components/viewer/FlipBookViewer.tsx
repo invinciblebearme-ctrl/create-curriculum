@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { PageFlip, FlipEvent } from 'page-flip';
 import { pdfjsLib } from '@/lib/pdfWorker';
+import { resolveAssetUrl } from '@/lib/pdfUtils';
 import {
   ChevronLeft,
   ChevronRight,
@@ -63,11 +64,35 @@ export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, o
 
     const loadPdf = async () => {
       try {
-        const loadingTask = pdfjsLib.getDocument({
-          url: pdfUrl,
-          cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/cmaps/',
-          cMapPacked: true,
-        });
+        const finalUrl = resolveAssetUrl(pdfUrl);
+        let loadingTask: any;
+
+        // Try ArrayBuffer fetch first to ensure 100% compatibility across CDNs & subpaths
+        if (!finalUrl.startsWith('blob:') && !finalUrl.startsWith('data:')) {
+          try {
+            const res = await fetch(finalUrl);
+            if (!res.ok) throw new Error(`HTTP ${res.status} (${res.statusText})`);
+            const buffer = await res.arrayBuffer();
+            loadingTask = pdfjsLib.getDocument({
+              data: new Uint8Array(buffer),
+              cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/cmaps/',
+              cMapPacked: true,
+            });
+          } catch (e) {
+            console.warn('[FlipBookViewer] ArrayBuffer 로드 실패, URL로 재시도:', e);
+            loadingTask = pdfjsLib.getDocument({
+              url: finalUrl,
+              cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/cmaps/',
+              cMapPacked: true,
+            });
+          }
+        } else {
+          loadingTask = pdfjsLib.getDocument({
+            url: finalUrl,
+            cMapUrl: 'https://cdn.jsdelivr.net/npm/pdfjs-dist@4.6.82/cmaps/',
+            cMapPacked: true,
+          });
+        }
 
         loadingTask.onProgress = (progressData: { loaded: number; total: number }) => {
           if (progressData.total > 0) {

@@ -1,5 +1,5 @@
 import { Book, BookListResponse, BookUploadPayload, BookUpdatePayload } from '../types/book';
-import { generateCoverFromPdf } from '../lib/pdfUtils';
+import { generateCoverFromPdf, resolveAssetUrl } from '../lib/pdfUtils';
 import { getOrGenerateThumbnail, generateCreateBookSvgCover } from '../lib/thumbnailManager';
 
 const STORAGE_KEY = 'cf_3d_flipbook_create_collection_v2';
@@ -353,7 +353,7 @@ export async function getPdfBlobUrl(id: string): Promise<string> {
 
   // If local static PDF file path (/pdf/...)
   if (book && book.pdf_key && book.pdf_key.startsWith('/pdf/')) {
-    return book.pdf_key;
+    return resolveAssetUrl(book.pdf_key);
   }
 
   // Uploaded blob in memory
@@ -375,7 +375,7 @@ export async function getPdfBlobUrl(id: string): Promise<string> {
 
   // Fallback to public PDF if available
   if (book?.pdf_key) {
-    return book.pdf_key;
+    return resolveAssetUrl(book.pdf_key);
   }
 
   throw new Error('PDF 파일을 찾을 수 없습니다.');
@@ -401,6 +401,8 @@ export async function getCoverImageUrl(book: Book): Promise<string> {
   if (PDF_BLOB_STORAGE.has(book.id)) {
     const blob = PDF_BLOB_STORAGE.get(book.id)!;
     pdfSourceUrl = URL.createObjectURL(blob);
+  } else if (pdfSourceUrl && pdfSourceUrl.startsWith('/pdf/')) {
+    pdfSourceUrl = resolveAssetUrl(pdfSourceUrl);
   }
 
   // 3. Try to get or generate thumbnail via queue

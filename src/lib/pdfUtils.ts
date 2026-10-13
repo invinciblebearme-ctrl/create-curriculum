@@ -9,6 +9,22 @@ export interface ExtractedCover {
 }
 
 /**
+ * 어떤 호스팅 환경(GitHub Pages, Cloudflare Pages, 로컬)에서도
+ * 절대 경로와 서브패스를 자동 계산하여 정적 에셋의 정확한 절대 URL을 반환합니다.
+ */
+export function resolveAssetUrl(path: string): string {
+  if (!path) return '';
+  if (path.startsWith('blob:') || path.startsWith('data:') || path.startsWith('http://') || path.startsWith('https://')) {
+    return path;
+  }
+  const cleanPath = path.replace(/^\//, '');
+  const pathname = window.location.pathname;
+  const baseDir = pathname.endsWith('/') ? pathname : pathname.substring(0, pathname.lastIndexOf('/') + 1);
+  return `${window.location.origin}${baseDir}${cleanPath}`;
+}
+
+
+/**
  * PDF 파일의 첫 페이지를 읽어 썸네일 표지 Blob 및 메타데이터를 자동 생성합니다.
  */
 export async function generateCoverFromPdf(pdfFile: File | Blob): Promise<ExtractedCover> {
