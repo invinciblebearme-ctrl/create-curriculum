@@ -23,7 +23,6 @@
   // Environment variables
   "vars": {
     "ADMIN_EMAIL": "admin@school.ed.kr",
-    "ADMIN_PASSWORD": "7703",
     "CF_ACCESS_TEAM_DOMAIN": "your-team.cloudflareaccess.com",
     "CF_ACCESS_AUD": "your-access-aud-secret"
   }

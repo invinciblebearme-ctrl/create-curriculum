@@ -7,7 +7,7 @@ export async function verifyAdminAuth(
   const configuredAdminEmail = (env.ADMIN_EMAIL || 'admin@school.ed.kr').trim().toLowerCase();
   const configuredAdminPassword = (env.ADMIN_PASSWORD || '7703').trim();
 
-  // 1. Password Verification (Primary / Direct access with password 7703)
+  // 1. Admin Password Verification (Direct header/query/bearer auth)
   const passwordHeader = request.headers.get('x-admin-password') || '';
   const url = new URL(request.url);
   const passwordQuery = url.searchParams.get('admin_password') || '';

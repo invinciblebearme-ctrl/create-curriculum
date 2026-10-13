@@ -17,7 +17,7 @@ export const AdminPage: React.FC = () => {
     setAuthError(null);
     try {
       const savedPw = getAdminPassword();
-      if (savedPw === '7703') {
+      if (savedPw) {
         const result = await verifyAdmin(savedPw);
         if (result.authenticated) {
           setIsAuthenticated(true);
@@ -57,7 +57,7 @@ export const AdminPage: React.FC = () => {
         setPasswordInput('');
       } else {
         setIsAuthenticated(false);
-        setAuthError(result.error || '비밀번호가 올바르지 않습니다. (설정된 비밀번호: 7703)');
+        setAuthError(result.error || '비밀번호가 올바르지 않습니다.');
       }
     } catch (err: any) {
       setIsAuthenticated(false);
@@ -65,11 +65,6 @@ export const AdminPage: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickFill = () => {
-    setPasswordInput('7703');
-    setAuthError(null);
   };
 
   const handleLogout = () => {
@@ -98,7 +93,7 @@ export const AdminPage: React.FC = () => {
               <h2 className="text-2xl font-black text-[#34415c] mb-2 tracking-tight">관리자 센터 로그인</h2>
               <p className="text-xs text-[#8a96aa] mb-6 leading-relaxed">
                 전자책 등록 및 라이브러리 관리를 위해<br />
-                지정된 관리자 비밀번호를 입력해주세요.
+                관리자 비밀번호를 입력해주세요.
               </p>
 
               <form onSubmit={handlePasswordSubmit} className="space-y-4 text-left">
@@ -114,7 +109,7 @@ export const AdminPage: React.FC = () => {
                         setPasswordInput(e.target.value);
                         if (authError) setAuthError(null);
                       }}
-                      placeholder="비밀번호 입력 (7703)"
+                      placeholder="비밀번호를 입력하세요"
                       autoFocus
                       className="w-full pl-3.5 pr-10 py-3 bg-[#f8fafe] border border-[#dce3f1] rounded-[14px] text-sm font-semibold text-[#34415c] placeholder-[#9eabc0] focus:outline-none focus:border-[#687fe0] focus:bg-white focus:ring-2 focus:ring-[#687fe0]/20 transition"
                     />
@@ -122,6 +117,7 @@ export const AdminPage: React.FC = () => {
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8a96aa] hover:text-[#55657d] p-1"
+                      aria-label="비밀번호 보기 전환"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -135,7 +131,7 @@ export const AdminPage: React.FC = () => {
                   </div>
                 )}
 
-                <div className="pt-2 space-y-2.5">
+                <div className="pt-2">
                   <button
                     type="submit"
                     disabled={loading}
@@ -149,15 +145,6 @@ export const AdminPage: React.FC = () => {
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={handleQuickFill}
-                    className="w-full py-2.5 bg-[#f5f8ff] hover:bg-[#edf2fe] text-[#586fca] border border-[#dbe4fa] rounded-[13px] text-xs font-extrabold flex items-center justify-center gap-1.5 transition"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-[#f5a623]" />
-                    비밀번호 '7703' 빠른 입력
                   </button>
                 </div>
               </form>
@@ -179,7 +166,7 @@ export const AdminPage: React.FC = () => {
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-black text-[#34415c]">관리자 인증 완료</span>
                     <span className="text-[10px] font-extrabold bg-[#edf2ff] text-[#586fca] px-2 py-0.5 rounded-full border border-[#dbe4fa]">
-                      비번: 7703
+                      보안 세션 활성
                     </span>
                   </div>
                   <p className="text-[11px] text-[#8a96aa] font-medium">

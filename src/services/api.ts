@@ -449,27 +449,37 @@ export async function verifyAdmin(passwordCandidate?: string): Promise<{ authent
     }
   } catch {}
 
-  // 2. Client / Direct fallback verification (Default designated password: 7703)
-  if (currentPassword === '7703') {
-    setAdminPassword('7703');
+  // 2. Client Fallback Verification using Secure SHA-256 Hash
+  // Eliminates plain-text password from compiled client bundles
+  const ADMIN_PWD_HASH = '706a70c1f003240fa9abcf1a0d47610647d7d438719b2f5cd6d56505dc9ffdc5';
+  let inputHash = '';
+  try {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(currentPassword || '');
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    inputHash = Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
+  } catch {}
+
+  if (inputHash && inputHash === ADMIN_PWD_HASH) {
+    setAdminPassword(currentPassword);
     return {
       authenticated: true,
-      user: { email: 'admin@school.ed.kr', sub: 'password-7703-admin' },
+      user: { email: 'admin@school.ed.kr', sub: 'admin-authorized-session' },
     };
   }
 
   // If wrong password provided
-  if (currentPassword && currentPassword !== '7703') {
+  if (currentPassword) {
     return {
       authenticated: false,
-      error: '관리자 비밀번호가 올바르지 않습니다. (비밀번호: 7703)',
+      error: '관리자 비밀번호가 올바르지 않습니다.',
     };
   }
 
-  // 3. Fallback to local dev admin state if no password given
+  // 3. Fallback when no password provided
   return {
     authenticated: false,
-    error: '관리자 센터 비밀번호(7703)를 입력해주세요.',
+    error: '관리자 비밀번호를 입력해주세요.',
   };
 }
 
