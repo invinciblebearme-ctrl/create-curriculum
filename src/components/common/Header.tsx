@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, ShieldCheck, Home, Palette } from 'lucide-react';
+import { BookOpen, ShieldCheck, Home, Palette, ExternalLink } from 'lucide-react';
 import { isDevAdminEnabled, setDevAdminMode } from '@/services/api';
 
 export const Header: React.FC = () => {
@@ -22,8 +22,12 @@ export const Header: React.FC = () => {
       </div>
 
       <div className="max-w-[1160px] mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-        {/* Brand Logo (Matching create.allforedu.kr) */}
-        <Link to="/" className="flex items-center gap-3 group">
+        {/* Brand Logo (Links to https://create.allforedu.kr) */}
+        <a
+          href="https://create.allforedu.kr"
+          className="flex items-center gap-3 group"
+          title="create.allforedu.kr 메인 사이트로 돌아가기"
+        >
           <div className="w-[43px] h-[43px] rounded-[14px] bg-[#e2eaff] text-[#6b7fe0] flex items-center justify-center text-xl font-black shadow-sm group-hover:scale-105 transition-transform duration-200">
             <Palette className="w-5 h-5 text-[#6b7fe0]" />
           </div>
@@ -35,7 +39,7 @@ export const Header: React.FC = () => {
               연구학교 성과 공유 플랫폼 · 3D 서재
             </small>
           </div>
-        </Link>
+        </a>
 
         {/* Navigation Actions */}
         <div className="flex items-center gap-2 sm:gap-3">
@@ -53,6 +57,15 @@ export const Header: React.FC = () => {
               {devAdmin ? '관리자 ON' : '관리자 OFF'}
             </button>
           </div>
+
+          <a
+            href="https://create.allforedu.kr"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-[13px] bg-[#f5f8ff] hover:bg-[#e9f0fe] text-[#55698d] hover:text-[#374f7e] text-xs font-bold border border-[#dbe4fa] transition shadow-xs"
+            title="create.allforedu.kr 메인 사이트로 이동"
+          >
+            <span>메인 포털</span>
+            <ExternalLink className="w-3.5 h-3.5 text-[#687fe0]" />
+          </a>
 
           {isAdmin ? (
             <Link
