@@ -64,7 +64,7 @@ export const ViewerPage: React.FC = () => {
           onClick={() => navigate('/')}
           className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-semibold"
         >
-          서재로 돌아가기
+          홈으로 나가기
         </button>
       </div>
     );

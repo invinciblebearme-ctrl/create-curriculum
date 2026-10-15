@@ -487,10 +487,10 @@ export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, o
           <button
             onClick={onClose}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-[#687fe0] text-white transition-all text-xs font-bold border border-white/10"
-            title="서재로 돌아가기 (ESC)"
+            title="홈으로 나가기 (ESC)"
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">서재로 나가기</span>
+            <span className="hidden sm:inline">홈으로 나가기</span>
           </button>
 
           <div className="h-4 w-px bg-white/15 hidden sm:block" />
@@ -587,7 +587,7 @@ export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, o
                 onClick={onClose}
                 className="px-4 py-2 bg-[#687fe0] hover:bg-[#566ecf] text-white rounded-xl text-xs font-bold transition"
               >
-                서재로 돌아가기
+                홈으로 나가기
               </button>
             </div>
           </div>

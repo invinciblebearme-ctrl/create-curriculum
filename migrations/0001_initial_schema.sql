@@ -23,7 +23,7 @@ CREATE INDEX IF NOT EXISTS idx_books_title ON books(title);
 
 -- Initial Seed Data: CREATE Model Unit Design Collection
 INSERT OR IGNORE INTO books (id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published) VALUES
-('create-doc-1', 'CREATE 수업설계 모형 길잡이(1010수정본)', '미래학교 프로젝트 실증수업 지도안: CREATE 수업설계 모형 길잡이 자료입니다.', '수업설계 길잡이', 'books/create-doc-1/document.pdf', 'covers/create-doc-1/cover.jpg', 4786542, 36, 1),
+('create-doc-1', 'CREATE 수업설계 모형 길잡이', '미래학교 프로젝트 실증수업 지도안: CREATE 수업설계 모형 길잡이 자료입니다.', '수업설계 길잡이', 'books/create-doc-1/document.pdf', 'covers/create-doc-1/cover.jpg', 4786542, 36, 1),
 ('create-doc-2', 'CREATE모형 단원설계안(1학년)', '미래학교 프로젝트 실증수업 지도안: CREATE모형 단원설계안(1학년)', '1·2학년', 'books/create-doc-2/document.pdf', 'covers/create-doc-2/cover.jpg', 158414, 8, 1),
 ('create-doc-3', 'CREATE모형 단원설계안(2학년)', '미래학교 프로젝트 실증수업 지도안: CREATE모형 단원설계안(2학년)', '1·2학년', 'books/create-doc-3/document.pdf', 'covers/create-doc-3/cover.jpg', 519107, 10, 1),
 ('create-doc-4', 'CREATE모형 단원설계안_통합 전담수업_2학년', '미래학교 프로젝트 실증수업 지도안: CREATE모형 단원설계안_통합 전담수업_2학년', '전담교과', 'books/create-doc-4/document.pdf', 'covers/create-doc-4/cover.jpg', 162009, 8, 1),

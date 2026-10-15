@@ -2,7 +2,7 @@ import { Book, BookListResponse, BookUploadPayload, BookUpdatePayload } from '..
 import { generateCoverFromPdf, resolveAssetUrl } from '../lib/pdfUtils';
 import { getOrGenerateThumbnail, generateCreateBookSvgCover } from '../lib/thumbnailManager';
 
-const STORAGE_KEY = 'cf_3d_flipbook_create_collection_v2';
+const STORAGE_KEY = 'cf_3d_flipbook_create_collection_v3';
 const PDF_BLOB_STORAGE = new Map<string, Blob>();
 const COVER_DATA_STORAGE = new Map<string, string>();
 
@@ -10,10 +10,10 @@ const COVER_DATA_STORAGE = new Map<string, string>();
 const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-1",
-    title: "CREATE 수업설계 모형 길잡이(1010수정본)",
+    title: "CREATE 수업설계 모형 길잡이",
     description: "미래학교 프로젝트 실증수업 지도안: CREATE 수업설계 모형의 기본 개념과 설계 전략 가이드북입니다.",
     category: "수업설계 길잡이",
-    pdf_key: "/pdf/CREATE%20%EC%88%98%EC%97%85%EC%84%A4%EA%B3%84%20%EB%AA%A8%ED%98%95%20%EA%B8%B8%EC%9E%A1%EC%9D%B4(1010%EC%88%98%EC%A0%95%EB%B3%B8).pdf",
+    pdf_key: "/pdf/CREATE%20%EC%88%98%EC%97%85%EC%84%A4%EA%B3%84%20%EB%AA%A8%ED%98%95%20%EA%B8%B8%EC%9E%A1%EC%9D%B4.pdf",
     cover_key: "covers/create-doc-1/cover.jpg",
     file_size: 4786542,
     page_count: 36,
