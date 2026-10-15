@@ -39,14 +39,12 @@ export type CategoryOption =
   | '수업설계 길잡이'
   | '1·2학년'
   | '3·4학년'
-  | '5·6학년'
-  | '전담교과';
+  | '5·6학년';
 
 export const CATEGORIES: CategoryOption[] = [
   '전체',
   '수업설계 길잡이',
   '1·2학년',
   '3·4학년',
-  '5·6학년',
-  '전담교과'
+  '5·6학년'
 ];

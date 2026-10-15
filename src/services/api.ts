@@ -2,11 +2,11 @@ import { Book, BookListResponse, BookUploadPayload, BookUpdatePayload } from '..
 import { generateCoverFromPdf, resolveAssetUrl } from '../lib/pdfUtils';
 import { getOrGenerateThumbnail, generateCreateBookSvgCover } from '../lib/thumbnailManager';
 
-const STORAGE_KEY = 'cf_3d_flipbook_create_collection_v4';
+const STORAGE_KEY = 'cf_3d_flipbook_grades_v5';
 const PDF_BLOB_STORAGE = new Map<string, Blob>();
 const COVER_DATA_STORAGE = new Map<string, string>();
 
-// 사용자의 실제 16종 CREATE모형 단원설계안 및 길잡이 도서 목록
+// 1번 서재: CREATE모형 학년별 단원설계안 및 길잡이 도서 목록 (총 7종)
 const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-1",
@@ -48,19 +48,6 @@ const INITIAL_BOOKS: Book[] = [
     updated_at: new Date().toISOString()
   },
   {
-    id: "create-doc-4",
-    title: "CREATE모형 단원설계안_통합 전담수업_2학년",
-    description: "2학년 통합 교과 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%ED%86%B5%ED%95%A9%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_2%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-4/cover.jpg",
-    file_size: 162009,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 3000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
     id: "create-doc-5",
     title: "CREATE모형 단원설계안(3학년)",
     description: "3학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
@@ -87,32 +74,6 @@ const INITIAL_BOOKS: Book[] = [
     updated_at: new Date().toISOString()
   },
   {
-    id: "create-doc-7",
-    title: "CREATE모형 단원설계안_영어 전담수업_4학년",
-    description: "4학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%98%81%EC%96%B4%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_4%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-7/cover.jpg",
-    file_size: 161755,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 6000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: "create-doc-8",
-    title: "CREATE모형 단원설계안_체육 전담수업_4학년",
-    description: "4학년 체육 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%B2%B4%EC%9C%A1%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_4%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-8/cover.jpg",
-    file_size: 143598,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 7000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
     id: "create-doc-9",
     title: "CREATE모형 단원설계안(5학년)",
     description: "5학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
@@ -126,45 +87,6 @@ const INITIAL_BOOKS: Book[] = [
     updated_at: new Date().toISOString()
   },
   {
-    id: "create-doc-10",
-    title: "CREATE모형 단원설계안_과학 전담수업_5학년",
-    description: "5학년 과학 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EA%B3%BC%ED%95%99%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_5%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-10/cover.jpg",
-    file_size: 160590,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 9000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: "create-doc-11",
-    title: "CREATE모형 단원설계안_영어 전담수업_5학년",
-    description: "5학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%98%81%EC%96%B4%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_5%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-11/cover.jpg",
-    file_size: 133150,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 10000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: "create-doc-12",
-    title: "CREATE모형 단원설계안_보건_5학년",
-    description: "5학년 보건 교과 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EB%B3%B4%EA%B1%B4_5%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-12/cover.jpg",
-    file_size: 97790,
-    page_count: 6,
-    is_published: 1,
-    created_at: new Date(Date.now() - 11000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
     id: "create-doc-13",
     title: "CREATE모형 단원설계안(6학년)",
     description: "6학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
@@ -175,45 +97,6 @@ const INITIAL_BOOKS: Book[] = [
     page_count: 10,
     is_published: 1,
     created_at: new Date(Date.now() - 12000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: "create-doc-14",
-    title: "CREATE모형 단원설계안_과학 전담수업_6학년",
-    description: "6학년 과학 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EA%B3%BC%ED%95%99%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_6%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-14/cover.jpg",
-    file_size: 136010,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 13000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: "create-doc-15",
-    title: "CREATE모형 단원설계안_영어 전담수업_6학년",
-    description: "6학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%98%81%EC%96%B4%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_6%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-15/cover.jpg",
-    file_size: 156506,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 14000).toISOString(),
-    updated_at: new Date().toISOString()
-  },
-  {
-    id: "create-doc-16",
-    title: "CREATE모형 단원설계안_체육 전담수업_6학년",
-    description: "6학년 체육 전담수업 CREATE 모형 단원 설계안입니다.",
-    category: "전담교과",
-    pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%B2%B4%EC%9C%A1%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_6%ED%95%99%EB%85%84.pdf",
-    cover_key: "covers/create-doc-16/cover.jpg",
-    file_size: 123432,
-    page_count: 8,
-    is_published: 1,
-    created_at: new Date(Date.now() - 15000).toISOString(),
     updated_at: new Date().toISOString()
   }
 ];

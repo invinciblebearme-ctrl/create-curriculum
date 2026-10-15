@@ -71,7 +71,7 @@ export const LibraryPage: React.FC = () => {
           <div className="relative z-10 max-w-2xl mx-auto">
             {/* Eyebrow Badge */}
             <span className="inline-block text-[11px] font-black tracking-[1.4px] text-[#6378b3] bg-white/70 border border-white rounded-full px-4 py-2 shadow-sm mb-4">
-              CREATE 모형 연구학교 · 성과공유 3D 서재
+              CREATE 모형 연구학교 · 성과공유 3D 서재 [학년별 단원설계안]
             </span>
 
             {/* Hero Title */}

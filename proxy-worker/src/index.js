@@ -2,44 +2,78 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // 1. /curriculum 으로 접근 시 /curriculum/ 으로 자동 리다이렉트 (Trailing slash)
-    if (url.pathname === '/curriculum') {
-      url.pathname = '/curriculum/';
-      return Response.redirect(url.toString(), 301);
+    // [1] /curriculum2 -> create-curriculum-2.invinciblebearme.workers.dev
+    if (url.pathname === '/curriculum2') {
+      return Response.redirect(`${url.origin}/curriculum2/`, 301);
     }
+    if (url.pathname.startsWith('/curriculum2/')) {
+      const targetUrl = new URL(request.url);
+      targetUrl.hostname = 'create-curriculum-2.invinciblebearme.workers.dev';
 
-    // 2. future-curriculum.pages.dev 로 프록시
-    const targetUrl = new URL(request.url);
-    targetUrl.hostname = 'future-curriculum.pages.dev';
-
-    let subPath = url.pathname.replace(/^\/curriculum\/?/, '/');
-    if (!subPath.startsWith('/')) {
-      subPath = '/' + subPath;
-    }
-    targetUrl.pathname = subPath;
-
-    const modifiedRequest = new Request(targetUrl.toString(), {
-      method: request.method,
-      headers: request.headers,
-      body: request.body,
-      redirect: 'follow',
-    });
-
-    const response = await fetch(modifiedRequest);
-
-    // 3. HTML 응답에 <base href="/curriculum/"> 주입하여 모든 JS/CSS 에셋 경로 절대 보장
-    const contentType = response.headers.get('content-type') || '';
-    if (contentType.includes('text/html')) {
-      let html = await response.text();
-      if (!html.includes('<base href=')) {
-        html = html.replace('<head>', '<head><base href="/curriculum/">');
+      let subPath = url.pathname.replace(/^\/curriculum2\/?/, '/');
+      if (!subPath.startsWith('/')) {
+        subPath = '/' + subPath;
       }
-      return new Response(html, {
-        status: response.status,
-        headers: response.headers,
+      targetUrl.pathname = subPath;
+
+      const modifiedRequest = new Request(targetUrl.toString(), {
+        method: request.method,
+        headers: request.headers,
+        body: request.body,
+        redirect: 'follow',
       });
+
+      const response = await fetch(modifiedRequest);
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('text/html')) {
+        let html = await response.text();
+        if (!html.includes('<base href=')) {
+          html = html.replace('<head>', '<head><base href="/curriculum2/">');
+        }
+        return new Response(html, {
+          status: response.status,
+          headers: response.headers,
+        });
+      }
+      return response;
     }
 
-    return response;
+    // [2] /curriculum -> future-curriculum.pages.dev (기존 1번 서재)
+    if (url.pathname === '/curriculum') {
+      return Response.redirect(`${url.origin}/curriculum/`, 301);
+    }
+    if (url.pathname.startsWith('/curriculum/')) {
+      const targetUrl = new URL(request.url);
+      targetUrl.hostname = 'future-curriculum.pages.dev';
+
+      let subPath = url.pathname.replace(/^\/curriculum\/?/, '/');
+      if (!subPath.startsWith('/')) {
+        subPath = '/' + subPath;
+      }
+      targetUrl.pathname = subPath;
+
+      const modifiedRequest = new Request(targetUrl.toString(), {
+        method: request.method,
+        headers: request.headers,
+        body: request.body,
+        redirect: 'follow',
+      });
+
+      const response = await fetch(modifiedRequest);
+      const contentType = response.headers.get('content-type') || '';
+      if (contentType.includes('text/html')) {
+        let html = await response.text();
+        if (!html.includes('<base href=')) {
+          html = html.replace('<head>', '<head><base href="/curriculum/">');
+        }
+        return new Response(html, {
+          status: response.status,
+          headers: response.headers,
+        });
+      }
+      return response;
+    }
+
+    return fetch(request);
   }
 };
