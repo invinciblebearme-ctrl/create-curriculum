@@ -245,21 +245,13 @@ export async function fetchBookById(id: string): Promise<Book> {
 }
 
 export async function getPdfBlobUrl(id: string): Promise<string> {
-  const books = getStoredBooks();
-  const book = books.find((b) => b.id === id);
-
-  // If local static PDF file path (/pdf/...)
-  if (book && book.pdf_key && book.pdf_key.startsWith('/pdf/')) {
-    return resolveAssetUrl(book.pdf_key);
-  }
-
-  // Uploaded blob in memory
+  // 1. Uploaded blob in memory
   const cachedBlob = PDF_BLOB_STORAGE.get(id);
   if (cachedBlob) {
     return URL.createObjectURL(cachedBlob);
   }
 
-  // Try real API endpoint
+  // 2. Try real API streaming endpoint
   try {
     const res = await fetch(getApiEndpoint(`/api/books/${id}/pdf`), {
       headers: isDevAdminActive ? { 'x-dev-admin': 'true' } : {},
@@ -270,7 +262,9 @@ export async function getPdfBlobUrl(id: string): Promise<string> {
     }
   } catch { }
 
-  // Fallback to public PDF if available
+  // 3. Fallback to static asset URL
+  const books = getStoredBooks();
+  const book = books.find((b) => b.id === id);
   if (book?.pdf_key) {
     return resolveAssetUrl(book.pdf_key);
   }
