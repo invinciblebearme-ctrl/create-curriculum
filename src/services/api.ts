@@ -2,7 +2,7 @@ import { Book, BookListResponse, BookUploadPayload, BookUpdatePayload } from '..
 import { generateCoverFromPdf, resolveAssetUrl } from '../lib/pdfUtils';
 import { getOrGenerateThumbnail, generateCreateBookSvgCover } from '../lib/thumbnailManager';
 
-const STORAGE_KEY = 'cf_3d_flipbook_create_collection_v3';
+const STORAGE_KEY = 'cf_3d_flipbook_create_collection_v4';
 const PDF_BLOB_STORAGE = new Map<string, Blob>();
 const COVER_DATA_STORAGE = new Map<string, string>();
 
@@ -11,7 +11,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-1",
     title: "CREATE 수업설계 모형 길잡이",
-    description: "미래학교 프로젝트 실증수업 지도안: CREATE 수업설계 모형의 기본 개념과 설계 전략 가이드북입니다.",
+    description: "CREATE 수업설계 모형의 기본 개념과 설계 전략 가이드북입니다.",
     category: "수업설계 길잡이",
     pdf_key: "/pdf/CREATE%20%EC%88%98%EC%97%85%EC%84%A4%EA%B3%84%20%EB%AA%A8%ED%98%95%20%EA%B8%B8%EC%9E%A1%EC%9D%B4.pdf",
     cover_key: "covers/create-doc-1/cover.jpg",
@@ -24,7 +24,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-2",
     title: "CREATE모형 단원설계안(1학년)",
-    description: "미래학교 프로젝트 실증수업 지도안: 1학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
+    description: "1학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "1·2학년",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(1%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-2/cover.jpg",
@@ -37,7 +37,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-3",
     title: "CREATE모형 단원설계안(2학년)",
-    description: "미래학교 프로젝트 실증수업 지도안: 2학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
+    description: "2학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "1·2학년",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(2%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-3/cover.jpg",
@@ -50,7 +50,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-4",
     title: "CREATE모형 단원설계안_통합 전담수업_2학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 2학년 통합 교과 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "2학년 통합 교과 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%ED%86%B5%ED%95%A9%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_2%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-4/cover.jpg",
@@ -63,7 +63,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-5",
     title: "CREATE모형 단원설계안(3학년)",
-    description: "미래학교 프로젝트 실증수업 지도안: 3학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
+    description: "3학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "3·4학년",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(3%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-5/cover.jpg",
@@ -76,7 +76,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-6",
     title: "CREATE모형 단원설계안(4학년)",
-    description: "미래학교 프로젝트 실증수업 지도안: 4학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
+    description: "4학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "3·4학년",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(4%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-6/cover.jpg",
@@ -89,7 +89,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-7",
     title: "CREATE모형 단원설계안_영어 전담수업_4학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 4학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "4학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%98%81%EC%96%B4%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_4%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-7/cover.jpg",
@@ -102,7 +102,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-8",
     title: "CREATE모형 단원설계안_체육 전담수업_4학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 4학년 체육 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "4학년 체육 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%B2%B4%EC%9C%A1%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_4%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-8/cover.jpg",
@@ -115,7 +115,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-9",
     title: "CREATE모형 단원설계안(5학년)",
-    description: "미래학교 프로젝트 실증수업 지도안: 5학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
+    description: "5학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "5·6학년",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(5%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-9/cover.jpg",
@@ -128,7 +128,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-10",
     title: "CREATE모형 단원설계안_과학 전담수업_5학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 5학년 과학 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "5학년 과학 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EA%B3%BC%ED%95%99%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_5%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-10/cover.jpg",
@@ -141,7 +141,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-11",
     title: "CREATE모형 단원설계안_영어 전담수업_5학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 5학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "5학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%98%81%EC%96%B4%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_5%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-11/cover.jpg",
@@ -154,7 +154,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-12",
     title: "CREATE모형 단원설계안_보건_5학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 5학년 보건 교과 CREATE 모형 단원 설계안입니다.",
+    description: "5학년 보건 교과 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EB%B3%B4%EA%B1%B4_5%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-12/cover.jpg",
@@ -167,7 +167,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-13",
     title: "CREATE모형 단원설계안(6학년)",
-    description: "미래학교 프로젝트 실증수업 지도안: 6학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
+    description: "6학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "5·6학년",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(6%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-13/cover.jpg",
@@ -180,7 +180,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-14",
     title: "CREATE모형 단원설계안_과학 전담수업_6학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 6학년 과학 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "6학년 과학 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EA%B3%BC%ED%95%99%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_6%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-14/cover.jpg",
@@ -193,7 +193,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-15",
     title: "CREATE모형 단원설계안_영어 전담수업_6학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 6학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "6학년 영어 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%98%81%EC%96%B4%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_6%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-15/cover.jpg",
@@ -206,7 +206,7 @@ const INITIAL_BOOKS: Book[] = [
   {
     id: "create-doc-16",
     title: "CREATE모형 단원설계안_체육 전담수업_6학년",
-    description: "미래학교 프로젝트 실증수업 지도안: 6학년 체육 전담수업 CREATE 모형 단원 설계안입니다.",
+    description: "6학년 체육 전담수업 CREATE 모형 단원 설계안입니다.",
     category: "전담교과",
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88_%EC%B2%B4%EC%9C%A1%20%EC%A0%84%EB%8B%B4%EC%88%98%EC%97%85_6%ED%95%99%EB%85%84.pdf",
     cover_key: "covers/create-doc-16/cover.jpg",
@@ -294,7 +294,7 @@ async function requestApi<T>(url: string, options: RequestInit = {}): Promise<T>
     try {
       const json = JSON.parse(text);
       msg = json.error || text;
-    } catch {}
+    } catch { }
     throw new Error(msg || `API 오류: ${res.status}`);
   }
   return res.json() as Promise<T>;
@@ -371,7 +371,7 @@ export async function getPdfBlobUrl(id: string): Promise<string> {
       const blob = await res.blob();
       return URL.createObjectURL(blob);
     }
-  } catch {}
+  } catch { }
 
   // Fallback to public PDF if available
   if (book?.pdf_key) {
@@ -394,7 +394,7 @@ export async function getCoverImageUrl(book: Book): Promise<string> {
       COVER_DATA_STORAGE.set(book.id, url);
       return url;
     }
-  } catch {}
+  } catch { }
 
   // 2. Determine PDF source url
   let pdfSourceUrl = book.pdf_key;
@@ -447,7 +447,7 @@ export async function verifyAdmin(passwordCandidate?: string): Promise<{ authent
         return { authenticated: true, user: data.user || { email: 'admin@school.ed.kr' } };
       }
     }
-  } catch {}
+  } catch { }
 
   // 2. Client Fallback Verification using Secure SHA-256 Hash
   // Eliminates plain-text password from compiled client bundles
@@ -458,7 +458,7 @@ export async function verifyAdmin(passwordCandidate?: string): Promise<{ authent
     const data = encoder.encode(currentPassword || '');
     const hashBuffer = await crypto.subtle.digest('SHA-256', data);
     inputHash = Array.from(new Uint8Array(hashBuffer)).map((b) => b.toString(16).padStart(2, '0')).join('');
-  } catch {}
+  } catch { }
 
   if (inputHash && inputHash === ADMIN_PWD_HASH) {
     setAdminPassword(currentPassword);
@@ -530,7 +530,7 @@ export async function uploadBook(payload: BookUploadPayload): Promise<Book> {
       const extracted = await generateCoverFromPdf(payload.pdf_file);
       pageCount = extracted.pageCount;
       coverUrl = extracted.coverDataUrl;
-    } catch {}
+    } catch { }
 
     if (payload.cover_file) {
       coverUrl = URL.createObjectURL(payload.cover_file);

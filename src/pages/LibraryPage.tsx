@@ -78,18 +78,18 @@ export const LibraryPage: React.FC = () => {
             <h1 className="text-[32px] sm:text-[46px] leading-[1.38] tracking-[-1.8px] text-[#34476a] font-black mb-3">
               수업의 변화를 여는 <span className="text-[#687de0]">CREATE 모형</span>
               <br />
-              실증수업 설계안
+              학년별 단원 설계안
             </h1>
 
             {/* Hero Subtitle */}
             <p className="text-[14px] sm:text-[15px] leading-[1.8] text-[#697b98] mb-6 font-normal">
-              연구학교에서 실천하고 검증한 학년별·교과별 단원 설계안을 실제 종이책처럼
+              연구학교에서 실천하고 검증한 학년별 단원 설계안을 실제 종이책처럼
               <br className="hidden sm:inline" /> 한 페이지씩 넘기며 생생하게 읽을 수 있는 온라인 3D 전자책 서재입니다.
             </p>
 
             {/* Chips */}
             <div className="flex justify-center gap-2 sm:gap-2.5 flex-wrap mt-7">
-              {['단원설계 길잡이', '1·2학년 설계안', '3·4학년 설계안', '5·6학년 설계안', '전담교과 실증수업', '단면 3D 플립북'].map(
+              {['1·2학년 설계안', '3·4학년 설계안', '5·6학년 설계안', '단면 3D 플립북'].map(
                 (chip) => (
                   <span
                     key={chip}
@@ -136,7 +136,7 @@ export const LibraryPage: React.FC = () => {
               연구학교 교수학습 제작자료 <span className="text-[#e3a7d1]">✦</span>
             </h2>
             <p className="text-[13px] text-[#8996aa]">
-              수업에 활용하는 실증 디지털 자료와 단원 설계안 모음입니다.
+              CREATE 모형 기반 단원 설계안 모음입니다.
             </p>
           </div>
 
