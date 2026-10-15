@@ -111,7 +111,7 @@ export const LibraryPage: React.FC = () => {
             </div>
             <div>
               <strong className="text-[15px] font-extrabold text-[#34415c] block">
-                CREATE 실증수업 설계안 및 교수학습 자료집
+                CREATE 학년별 단원설계안 및 교수학습 자료집
               </strong>
               <p className="text-[12px] text-[#8a96aa] mt-0.5">
                 모든 전자책은 로그인 없이 PC, 태블릿, 스마트폰에서 즉시 한 페이지씩 열람 가능합니다.
@@ -237,7 +237,7 @@ export const LibraryPage: React.FC = () => {
             rel="noopener noreferrer"
             className="px-4 py-2.5 rounded-[13px] bg-white text-[#6077d1] hover:text-[#4b63be] border border-[#dbe4fa] text-xs font-extrabold flex items-center gap-1.5 shadow-sm shrink-0 hover:bg-[#f8faff] transition"
           >
-            <span>공식 사이트 방문</span>
+            <span>홈 화면으로 돌아가기</span>
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </section>
@@ -267,10 +267,10 @@ export const LibraryPage: React.FC = () => {
         <div className="max-w-[1160px] mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="text-center sm:text-left">
             <strong className="text-[13px] text-[#617392] block font-bold">
-              CREATE 모형 연구학교 | 3D 전자책 성과공유 서재
+              2026 교육부 요청 전북특별자치도교육청 AI 디지털 활용 연구학교 군산초등학교
             </strong>
             <p className="mt-1 text-[11px] text-[#8996aa]">
-              Cloudflare Pages & R2 & D1 기반 분산 인프라 · 실물 종이책 단면 3D 뷰어 엔진 탑재
+              Copyrightⓒ 군산초등학교. All rights reserved
             </p>
           </div>
           <div className="flex items-center gap-2">

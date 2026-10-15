@@ -111,7 +111,7 @@ export const AdminDashboard: React.FC = () => {
             CREATE 연구학교 전자책 관리 센터
           </h1>
           <p className="text-xs sm:text-sm text-[#8a96aa] mt-1">
-            Cloudflare R2 스토리지 및 D1 데이터베이스에 보관된 실증수업 단원설계안을 등록, 수정, 삭제합니다.
+            Cloudflare R2 스토리지 및 D1 데이터베이스에 보관된 학년별 단원설계안을 등록, 수정, 삭제합니다.
           </p>
         </div>
 

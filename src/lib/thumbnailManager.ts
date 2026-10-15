@@ -140,7 +140,7 @@ export function generateCreateBookSvgCover(title: string, category: string): str
   <text x="200" y="380" fill="${primaryColor}" font-size="13" font-weight="700" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">${category}</text>
 
   <!-- Bottom Details -->
-  <text x="200" y="480" fill="#5E5A80" font-size="12" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">실증수업 지도안 및 교수학습 설계 자료</text>
+  <text x="200" y="480" fill="#5E5A80" font-size="12" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">학년별 단원설계안 및 교수학습 설계 자료</text>
   <text x="200" y="505" fill="#5E5A80" font-size="10" opacity="0.7" font-family="'Noto Sans KR', sans-serif" text-anchor="middle">전라북도교육청 미래학교 연구회</text>
 
   <!-- Book Spine 3D Texture -->

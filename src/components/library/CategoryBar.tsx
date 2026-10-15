@@ -85,7 +85,7 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
       {/* Results Label */}
       <div className="flex justify-between items-center pt-2 text-[12px] text-[#8693a9] font-bold">
         <div>
-          총 <strong className="text-[#6179db]">{totalCount}개</strong>의 실증수업 설계안 자료
+          총 <strong className="text-[#6179db]">{totalCount}개</strong>의 학년별 단원설계안 자료
         </div>
         {(selectedCategory !== '전체' || searchQuery) && (
           <button
