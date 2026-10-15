@@ -31,6 +31,11 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       }
     }
 
+    // If it's a seed PDF in static files, redirect to the static asset
+    if (book.pdf_key.startsWith('/pdf/')) {
+      return Response.redirect(new URL(book.pdf_key, request.url).toString(), 302);
+    }
+
     // 2. Fetch object from R2 with HTTP Range support
     const rangeHeader = request.headers.get('Range');
     const r2Options: R2GetOptions = rangeHeader ? { range: request.headers } : {};
