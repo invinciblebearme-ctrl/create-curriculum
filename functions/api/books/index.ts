@@ -23,7 +23,7 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
       );
     }
 
-    let query = 'SELECT id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at FROM books WHERE is_published = 1';
+    let query = 'SELECT * FROM books WHERE is_published = 1';
     const params: any[] = [];
 
     if (category && category !== '전체') {
@@ -38,8 +38,10 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
 
     if (sort === 'title') {
       query += ' ORDER BY title ASC';
-    } else {
+    } else if (sort === 'latest') {
       query += ' ORDER BY created_at DESC';
+    } else {
+      query += ' ORDER BY sort_order ASC, created_at DESC';
     }
 
     const statement = env.DB.prepare(query).bind(...params);

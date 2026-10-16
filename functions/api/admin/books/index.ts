@@ -20,9 +20,18 @@ export const onRequestGet: PagesFunction<Env> = async (context) => {
   }
 
   try {
-    const { results } = await env.DB.prepare(
-      'SELECT id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at FROM books ORDER BY created_at DESC'
-    ).all();
+    let results: any[] = [];
+    try {
+      const r = await env.DB.prepare(
+        'SELECT * FROM books ORDER BY sort_order ASC, created_at DESC'
+      ).all();
+      results = r.results || [];
+    } catch {
+      const r = await env.DB.prepare(
+        'SELECT * FROM books ORDER BY created_at DESC'
+      ).all();
+      results = r.results || [];
+    }
 
     return new Response(JSON.stringify({ books: results || [], total: results?.length || 0 }), {
       status: 200,
@@ -63,6 +72,9 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
     const description = (formData.get('description') as string) || '';
     const category = (formData.get('category') as string) || '기타';
     const isPublished = formData.get('is_published') === 'true' || formData.get('is_published') === '1' ? 1 : 0;
+    const emoji = (formData.get('emoji') as string) || '📖';
+    const sortOrderRaw = formData.get('sort_order') as string | null;
+    const sortOrder = sortOrderRaw !== null ? parseInt(sortOrderRaw, 10) : 0;
     const pageCount = parseInt((formData.get('page_count') as string) || '0', 10);
 
     const pdfFile = formData.get('pdf_file') as File;
@@ -120,23 +132,42 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       });
     }
 
-    // 5. Insert Metadata into D1
-    const statement = env.DB.prepare(
-      `INSERT INTO books (id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
-    ).bind(
-      bookId,
-      title.trim(),
-      description.trim(),
-      category.trim(),
-      pdfKey,
-      coverKey,
-      pdfFile.size,
-      pageCount,
-      isPublished
-    );
-
-    await statement.run();
+    // 5. Insert Metadata into D1 (with graceful fallback)
+    try {
+      const statement = env.DB.prepare(
+        `INSERT INTO books (id, title, description, category, emoji, sort_order, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      ).bind(
+        bookId,
+        title.trim(),
+        description.trim(),
+        category.trim(),
+        emoji,
+        sortOrder,
+        pdfKey,
+        coverKey,
+        pdfFile.size,
+        pageCount,
+        isPublished
+      );
+      await statement.run();
+    } catch {
+      const fallbackStatement = env.DB.prepare(
+        `INSERT INTO books (id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'), datetime('now'))`
+      ).bind(
+        bookId,
+        title.trim(),
+        description.trim(),
+        category.trim(),
+        pdfKey,
+        coverKey,
+        pdfFile.size,
+        pageCount,
+        isPublished
+      );
+      await fallbackStatement.run();
+    }
 
     return new Response(
       JSON.stringify({
@@ -146,6 +177,8 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
           title,
           description,
           category,
+          emoji,
+          sort_order: sortOrder,
           pdf_key: pdfKey,
           cover_key: coverKey,
           file_size: pdfFile.size,

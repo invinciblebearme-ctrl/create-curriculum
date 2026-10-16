@@ -7,8 +7,8 @@ interface CategoryBarProps {
   onSelectCategory: (category: string) => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
-  sortOption: 'latest' | 'title';
-  onSortChange: (sort: 'latest' | 'title') => void;
+  sortOption: 'order' | 'latest' | 'title';
+  onSortChange: (sort: 'order' | 'latest' | 'title') => void;
   totalCount: number;
 }
 
@@ -72,9 +72,10 @@ export const CategoryBar: React.FC<CategoryBarProps> = ({
             <ArrowUpDown className="w-3.5 h-3.5 text-[#687fe0]" />
             <select
               value={sortOption}
-              onChange={(e) => onSortChange(e.target.value as 'latest' | 'title')}
+              onChange={(e) => onSortChange(e.target.value as 'order' | 'latest' | 'title')}
               className="bg-transparent focus:outline-none cursor-pointer pr-1 text-[#30415e] font-extrabold"
             >
+              <option value="order">기본 순서</option>
               <option value="latest">최신순</option>
               <option value="title">가나다순</option>
             </select>

@@ -39,6 +39,8 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
       const title = formData.get('title') as string | null;
       const description = formData.get('description') as string | null;
       const category = formData.get('category') as string | null;
+      const emoji = formData.get('emoji') as string | null;
+      const sortOrderRaw = formData.get('sort_order') as string | null;
       const isPublishedRaw = formData.get('is_published');
       const isPublished = isPublishedRaw !== null ? (isPublishedRaw === 'true' || isPublishedRaw === '1' ? 1 : 0) : null;
       
@@ -46,11 +48,13 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
       const newCoverFile = formData.get('cover_file') as File | null;
 
       // Handle PDF replacement if provided
+      let newFileSize: number | null = null;
       if (newPdfFile && newPdfFile.size > 0) {
         const buffer = await newPdfFile.arrayBuffer();
         await env.R2_BUCKET.put(existing.pdf_key, buffer, {
           httpMetadata: { contentType: 'application/pdf' },
         });
+        newFileSize = newPdfFile.size;
       }
 
       // Handle Cover replacement if provided
@@ -77,16 +81,44 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         updateFields.push('category = ?');
         updateParams.push(category.trim());
       }
+      if (emoji !== null) {
+        try {
+          updateFields.push('emoji = ?');
+          updateParams.push(emoji.trim());
+        } catch {}
+      }
+      if (sortOrderRaw !== null) {
+        try {
+          updateFields.push('sort_order = ?');
+          updateParams.push(parseInt(sortOrderRaw, 10));
+        } catch {}
+      }
       if (isPublished !== null) {
         updateFields.push('is_published = ?');
         updateParams.push(isPublished);
       }
+      if (newFileSize !== null) {
+        updateFields.push('file_size = ?');
+        updateParams.push(newFileSize);
+      }
 
       updateParams.push(bookId);
 
-      await env.DB.prepare(
-        `UPDATE books SET ${updateFields.join(', ')} WHERE id = ?`
-      ).bind(...updateParams).run();
+      try {
+        await env.DB.prepare(
+          `UPDATE books SET ${updateFields.join(', ')} WHERE id = ?`
+        ).bind(...updateParams).run();
+      } catch (err: any) {
+        // Fallback omitting optional emoji/sort_order columns if not yet migrated
+        const basicFields = updateFields.filter((f) => !f.startsWith('emoji') && !f.startsWith('sort_order'));
+        const basicParams = updateParams.filter((_, idx) => {
+          const field = updateFields[idx];
+          return !field.startsWith('emoji') && !field.startsWith('sort_order');
+        });
+        await env.DB.prepare(
+          `UPDATE books SET ${basicFields.join(', ')} WHERE id = ?`
+        ).bind(...basicParams).run();
+      }
 
     } else {
       // JSON payload update (e.g. quick publish toggle or edit)
@@ -106,6 +138,14 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
         updateFields.push('category = ?');
         updateParams.push(body.category.trim());
       }
+      if (body.emoji !== undefined) {
+        updateFields.push('emoji = ?');
+        updateParams.push(body.emoji.trim());
+      }
+      if (body.sort_order !== undefined) {
+        updateFields.push('sort_order = ?');
+        updateParams.push(body.sort_order);
+      }
       if (body.is_published !== undefined) {
         updateFields.push('is_published = ?');
         updateParams.push(body.is_published ? 1 : 0);
@@ -113,13 +153,24 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
 
       updateParams.push(bookId);
 
-      await env.DB.prepare(
-        `UPDATE books SET ${updateFields.join(', ')} WHERE id = ?`
-      ).bind(...updateParams).run();
+      try {
+        await env.DB.prepare(
+          `UPDATE books SET ${updateFields.join(', ')} WHERE id = ?`
+        ).bind(...updateParams).run();
+      } catch {
+        const basicFields = updateFields.filter((f) => !f.startsWith('emoji') && !f.startsWith('sort_order'));
+        const basicParams = updateParams.filter((_, idx) => {
+          const field = updateFields[idx];
+          return !field.startsWith('emoji') && !field.startsWith('sort_order');
+        });
+        await env.DB.prepare(
+          `UPDATE books SET ${basicFields.join(', ')} WHERE id = ?`
+        ).bind(...basicParams).run();
+      }
     }
 
     const updated = await env.DB.prepare(
-      'SELECT id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at FROM books WHERE id = ?'
+      'SELECT * FROM books WHERE id = ?'
     ).bind(bookId).first();
 
     return new Response(JSON.stringify({ success: true, book: updated }), {

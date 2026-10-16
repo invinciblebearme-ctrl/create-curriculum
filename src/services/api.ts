@@ -13,6 +13,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE 수업설계 모형 길잡이",
     description: "CREATE 수업설계 모형의 기본 개념과 설계 전략 가이드북입니다.",
     category: "수업설계 길잡이",
+    emoji: "📖",
+    sort_order: 1,
     pdf_key: "/pdf/CREATE%20%EC%88%98%EC%97%85%EC%84%A4%EA%B3%84%20%EB%AA%A8%ED%98%95%20%EA%B8%B8%EC%9E%A1%EC%9D%B4.pdf",
     cover_key: "covers/create-doc-1/cover.jpg",
     file_size: 4786542,
@@ -26,6 +28,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE모형 단원설계안(1학년)",
     description: "1학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "1·2학년",
+    emoji: "🌱",
+    sort_order: 2,
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(1%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-2/cover.jpg",
     file_size: 158414,
@@ -39,6 +43,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE모형 단원설계안(2학년)",
     description: "2학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "1·2학년",
+    emoji: "🎨",
+    sort_order: 3,
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(2%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-3/cover.jpg",
     file_size: 519107,
@@ -52,6 +58,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE모형 단원설계안(3학년)",
     description: "3학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "3·4학년",
+    emoji: "💡",
+    sort_order: 4,
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(3%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-5/cover.jpg",
     file_size: 182725,
@@ -65,6 +73,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE모형 단원설계안(4학년)",
     description: "4학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "3·4학년",
+    emoji: "✨",
+    sort_order: 5,
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(4%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-6/cover.jpg",
     file_size: 2264015,
@@ -78,6 +88,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE모형 단원설계안(5학년)",
     description: "5학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "5·6학년",
+    emoji: "🧭",
+    sort_order: 6,
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(5%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-9/cover.jpg",
     file_size: 334709,
@@ -91,6 +103,8 @@ const INITIAL_BOOKS: Book[] = [
     title: "CREATE모형 단원설계안(6학년)",
     description: "6학년 학생들을 위한 CREATE 모형 기반 단원 설계안입니다.",
     category: "5·6학년",
+    emoji: "🚀",
+    sort_order: 7,
     pdf_key: "/pdf/CREATE%EB%AA%A8%ED%98%95%20%EB%8B%A8%EC%9B%90%EC%84%A4%EA%B3%84%EC%95%88(6%ED%95%99%EB%85%84).pdf",
     cover_key: "covers/create-doc-13/cover.jpg",
     file_size: 307092,
@@ -108,7 +122,27 @@ function getStoredBooks(): Book[] {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_BOOKS));
       return INITIAL_BOOKS;
     }
-    return JSON.parse(raw);
+    const parsed: Book[] = JSON.parse(raw);
+    let changed = false;
+    const enriched = parsed.map((book, idx) => {
+      const initMatch = INITIAL_BOOKS.find((b) => b.id === book.id);
+      let updated = { ...book };
+      if (!updated.emoji) {
+        updated.emoji = initMatch?.emoji || '📖';
+        changed = true;
+      }
+      if (updated.sort_order === undefined) {
+        updated.sort_order = initMatch?.sort_order ?? (idx + 1);
+        changed = true;
+      }
+      return updated;
+    });
+    // Sort by sort_order by default
+    enriched.sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999));
+    if (changed) {
+      saveStoredBooks(enriched);
+    }
+    return enriched;
   } catch {
     return INITIAL_BOOKS;
   }
@@ -200,7 +234,7 @@ async function requestApi<T>(url: string, options: RequestInit = {}): Promise<T>
 export async function fetchBooks(params: {
   category?: string;
   q?: string;
-  sort?: 'latest' | 'title';
+  sort?: 'order' | 'latest' | 'title';
 }): Promise<BookListResponse> {
   try {
     const searchParams = new URLSearchParams();
@@ -225,8 +259,11 @@ export async function fetchBooks(params: {
     }
     if (params.sort === 'title') {
       books.sort((a, b) => a.title.localeCompare(b.title));
-    } else {
+    } else if (params.sort === 'latest') {
       books.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    } else {
+      // sort === 'order' or default
+      books.sort((a, b) => (a.sort_order ?? 999) - (b.sort_order ?? 999));
     }
 
     return { books, total: books.length };
@@ -391,6 +428,8 @@ export async function uploadBook(payload: BookUploadPayload): Promise<Book> {
     formData.append('category', payload.category);
     formData.append('is_published', payload.is_published ? '1' : '0');
     formData.append('pdf_file', payload.pdf_file);
+    if (payload.emoji) formData.append('emoji', payload.emoji);
+    if (payload.sort_order !== undefined) formData.append('sort_order', String(payload.sort_order));
     if (payload.cover_file) {
       formData.append('cover_file', payload.cover_file);
     }
@@ -410,7 +449,11 @@ export async function uploadBook(payload: BookUploadPayload): Promise<Book> {
       throw new Error(err.error || '업로드 실패');
     }
     const data = await res.json() as any;
-    return data.book;
+    const newBook = data.book;
+
+    const books = [newBook, ...getStoredBooks()];
+    saveStoredBooks(books);
+    return newBook;
   } catch {
     // Local fallback upload
     const newId = 'create-doc-' + Date.now();
@@ -432,11 +475,14 @@ export async function uploadBook(payload: BookUploadPayload): Promise<Book> {
       COVER_DATA_STORAGE.set(newId, coverUrl);
     }
 
+    const existingBooks = getStoredBooks();
     const newBook: Book = {
       id: newId,
       title: payload.title,
       description: payload.description,
       category: payload.category,
+      emoji: payload.emoji || '📖',
+      sort_order: payload.sort_order ?? (existingBooks.length + 1),
       pdf_key: `books/${newId}/document.pdf`,
       cover_key: `covers/${newId}/cover.jpg`,
       file_size: payload.pdf_file.size,
@@ -446,39 +492,124 @@ export async function uploadBook(payload: BookUploadPayload): Promise<Book> {
       updated_at: new Date().toISOString(),
     };
 
-    const books = [newBook, ...getStoredBooks()];
+    const books = [newBook, ...existingBooks];
     saveStoredBooks(books);
     return newBook;
   }
 }
 
 export async function updateBook(id: string, payload: BookUpdatePayload): Promise<Book> {
+  const hasFile = !!(payload.pdf_file || payload.cover_file);
   try {
-    return await requestApi<Book>(`/api/admin/books/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    let updated: Book;
+    if (hasFile) {
+      const formData = new FormData();
+      if (payload.title !== undefined) formData.append('title', payload.title);
+      if (payload.description !== undefined) formData.append('description', payload.description);
+      if (payload.category !== undefined) formData.append('category', payload.category);
+      if (payload.is_published !== undefined) formData.append('is_published', payload.is_published ? '1' : '0');
+      if (payload.emoji !== undefined) formData.append('emoji', payload.emoji);
+      if (payload.sort_order !== undefined) formData.append('sort_order', String(payload.sort_order));
+      if (payload.pdf_file) formData.append('pdf_file', payload.pdf_file);
+      if (payload.cover_file) formData.append('cover_file', payload.cover_file);
+
+      const headers: Record<string, string> = {};
+      const pw = getAdminPassword();
+      if (pw) headers['x-admin-password'] = pw;
+      if (isDevAdminActive) headers['x-dev-admin'] = 'true';
+
+      const res = await fetch(getApiEndpoint(`/api/admin/books/${id}`), {
+        method: 'PUT',
+        body: formData,
+        headers,
+      });
+      if (!res.ok) {
+        const err = await res.json() as any;
+        throw new Error(err.error || '수정 실패');
+      }
+      const data = await res.json() as any;
+      updated = data.book;
+    } else {
+      updated = await requestApi<Book>(`/api/admin/books/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+    }
+
+    // Sync memory blobs if new file uploaded
+    if (payload.pdf_file) {
+      PDF_BLOB_STORAGE.set(id, payload.pdf_file);
+    }
+    if (payload.cover_file) {
+      const url = URL.createObjectURL(payload.cover_file);
+      COVER_DATA_STORAGE.set(id, url);
+    }
+
+    const books = getStoredBooks();
+    const index = books.findIndex((b) => b.id === id);
+    if (index !== -1) {
+      books[index] = { ...books[index], ...updated };
+      saveStoredBooks(books);
+    }
+
+    return updated;
   } catch {
     const books = getStoredBooks();
     const index = books.findIndex((b) => b.id === id);
     if (index === -1) throw new Error('도서를 찾을 수 없습니다.');
 
-    const updated: Book = {
-      ...books[index],
-      ...payload,
-      is_published: payload.is_published !== undefined ? (payload.is_published ? 1 : 0) : books[index].is_published,
-      updated_at: new Date().toISOString(),
-    };
+    let newFileSize = books[index].file_size;
+    let newPageCount = books[index].page_count;
+
+    if (payload.pdf_file) {
+      PDF_BLOB_STORAGE.set(id, payload.pdf_file);
+      newFileSize = payload.pdf_file.size;
+      try {
+        const extracted = await generateCoverFromPdf(payload.pdf_file);
+        newPageCount = extracted.pageCount;
+        if (!payload.cover_file) {
+          COVER_DATA_STORAGE.set(id, extracted.coverDataUrl);
+        }
+      } catch { }
+    }
 
     if (payload.cover_file) {
       const url = URL.createObjectURL(payload.cover_file);
       COVER_DATA_STORAGE.set(id, url);
     }
 
+    const updated: Book = {
+      ...books[index],
+      ...payload,
+      file_size: newFileSize,
+      page_count: newPageCount,
+      is_published: payload.is_published !== undefined ? (payload.is_published ? 1 : 0) : books[index].is_published,
+      updated_at: new Date().toISOString(),
+    };
+
     books[index] = updated;
     saveStoredBooks(books);
     return updated;
+  }
+}
+
+export async function saveBooksOrder(orderedBooks: Book[]): Promise<void> {
+  const updatedBooks = orderedBooks.map((b, idx) => ({
+    ...b,
+    sort_order: idx + 1,
+  }));
+  saveStoredBooks(updatedBooks);
+
+  try {
+    const payload = updatedBooks.map((b, idx) => ({ id: b.id, sort_order: idx + 1 }));
+    await requestApi('/api/admin/books/reorder', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ orders: payload }),
+    });
+  } catch (e) {
+    console.warn('서버 순서 동기화 실패 (로컬 스토리지에 정상 저장됨):', e);
   }
 }
 

@@ -50,7 +50,7 @@ export const BookCard: React.FC<BookCardProps> = ({ book, index, onRead, onDetai
           onClick={() => onRead(book)}
           title="클릭하여 3D 전자책 열기"
         >
-          <span>{tint.icon}</span>
+          <span>{book.emoji || tint.icon}</span>
         </div>
 
         <div className="flex items-center gap-1.5">
