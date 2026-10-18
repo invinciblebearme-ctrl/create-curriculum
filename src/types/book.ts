@@ -39,6 +39,7 @@ export interface BookUpdatePayload {
   pdf_file?: File;
   emoji?: string;
   sort_order?: number;
+  page_count?: number;
 }
 
 export const PRESET_EMOJIS = [

@@ -22,15 +22,23 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
   }
 
   try {
-    const existing = await env.DB.prepare(
+    let existing = await env.DB.prepare(
       'SELECT id, pdf_key, cover_key FROM books WHERE id = ?'
     ).bind(bookId).first<{ id: string; pdf_key: string; cover_key: string }>();
 
     if (!existing) {
-      return new Response(JSON.stringify({ error: '수정할 도서를 찾을 수 없습니다.' }), {
-        status: 404,
-        headers: { 'Content-Type': 'application/json' },
-      });
+      // Auto-initialize seed book in D1 if not yet inserted
+      existing = {
+        id: bookId,
+        pdf_key: `books/${bookId}/document.pdf`,
+        cover_key: `covers/${bookId}/cover.jpg`,
+      };
+      try {
+        await env.DB.prepare(
+          `INSERT INTO books (id, title, description, category, pdf_key, cover_key, file_size, page_count, is_published, created_at, updated_at)
+           VALUES (?, ?, '', '수업설계 길잡이', ?, ?, 0, 0, 1, datetime('now'), datetime('now'))`
+        ).bind(bookId, bookId, existing.pdf_key, existing.cover_key).run();
+      } catch {}
     }
 
     const contentType = request.headers.get('content-type') || '';
@@ -41,6 +49,7 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
       const category = formData.get('category') as string | null;
       const emoji = formData.get('emoji') as string | null;
       const sortOrderRaw = formData.get('sort_order') as string | null;
+      const pageCountRaw = formData.get('page_count') as string | null;
       const isPublishedRaw = formData.get('is_published');
       const isPublished = isPublishedRaw !== null ? (isPublishedRaw === 'true' || isPublishedRaw === '1' ? 1 : 0) : null;
       
@@ -49,20 +58,31 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
 
       // Handle PDF replacement if provided
       let newFileSize: number | null = null;
+      let newPdfKey: string | null = null;
       if (newPdfFile && newPdfFile.size > 0) {
         const buffer = await newPdfFile.arrayBuffer();
-        await env.R2_BUCKET.put(existing.pdf_key, buffer, {
+        const targetPdfKey = existing.pdf_key && !existing.pdf_key.startsWith('/pdf/')
+          ? existing.pdf_key
+          : `books/${bookId}/doc_${Date.now()}.pdf`;
+        await env.R2_BUCKET.put(targetPdfKey, buffer, {
           httpMetadata: { contentType: 'application/pdf' },
+          customMetadata: { originalName: newPdfFile.name || 'document.pdf' },
         });
         newFileSize = newPdfFile.size;
+        newPdfKey = targetPdfKey;
       }
 
       // Handle Cover replacement if provided
+      let newCoverKey: string | null = null;
       if (newCoverFile && newCoverFile.size > 0) {
         const buffer = await newCoverFile.arrayBuffer();
-        await env.R2_BUCKET.put(existing.cover_key, buffer, {
+        const targetCoverKey = existing.cover_key && !existing.cover_key.startsWith('/pdf/')
+          ? existing.cover_key
+          : `covers/${bookId}/cover_${Date.now()}.jpg`;
+        await env.R2_BUCKET.put(targetCoverKey, buffer, {
           httpMetadata: { contentType: newCoverFile.type || 'image/jpeg' },
         });
+        newCoverKey = targetCoverKey;
       }
 
       // Update D1
@@ -93,6 +113,12 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
           updateParams.push(parseInt(sortOrderRaw, 10));
         } catch {}
       }
+      if (pageCountRaw !== null) {
+        try {
+          updateFields.push('page_count = ?');
+          updateParams.push(parseInt(pageCountRaw, 10));
+        } catch {}
+      }
       if (isPublished !== null) {
         updateFields.push('is_published = ?');
         updateParams.push(isPublished);
@@ -100,6 +126,14 @@ export const onRequestPut: PagesFunction<Env> = async (context) => {
       if (newFileSize !== null) {
         updateFields.push('file_size = ?');
         updateParams.push(newFileSize);
+      }
+      if (newPdfKey !== null) {
+        updateFields.push('pdf_key = ?');
+        updateParams.push(newPdfKey);
+      }
+      if (newCoverKey !== null) {
+        updateFields.push('cover_key = ?');
+        updateParams.push(newCoverKey);
       }
 
       updateParams.push(bookId);
