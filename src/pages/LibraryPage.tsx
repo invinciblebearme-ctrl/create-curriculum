@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { fetchBooks, getPdfBlobUrl } from '@/services/api';
 import { Book } from '@/types/book';
@@ -99,6 +100,18 @@ export const LibraryPage: React.FC = () => {
                   </span>
                 )
               )}
+            </div>
+
+            {/* Direct Guide Ebook Button */}
+            <div className="mt-6 flex justify-center">
+              <Link
+                to="/read/create-doc-1"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-[#4d63be] to-[#687fe0] text-white text-xs font-black shadow-md hover:shadow-lg hover:scale-105 transition-all duration-200"
+              >
+                <span>📘</span>
+                <span>CREATE 수업설계 모형 길잡이 전자책 바로 열기</span>
+                <span className="text-white/80 text-[10px] ml-1">3D 뷰어 →</span>
+              </Link>
             </div>
           </div>
         </section>
