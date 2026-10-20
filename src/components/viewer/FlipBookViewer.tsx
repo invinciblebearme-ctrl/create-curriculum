@@ -22,9 +22,24 @@ interface FlipBookViewerProps {
   pdfUrl: string;
   title: string;
   onClose: () => void;
+  homeUrl?: string;
+  isGuide?: boolean;
 }
 
-export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, onClose }) => {
+export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({
+  pdfUrl,
+  title,
+  onClose,
+  homeUrl,
+  isGuide,
+}) => {
+  const handleHome = () => {
+    if (homeUrl) {
+      window.location.href = homeUrl;
+    } else {
+      onClose();
+    }
+  };
   const containerRef = useRef<HTMLDivElement>(null);
   const flipBookRef = useRef<PageFlip | null>(null);
   const pdfDocRef = useRef<any>(null);
@@ -456,7 +471,7 @@ export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, o
         if (isFullscreen) {
           toggleFullscreen();
         } else {
-          onClose();
+          handleHome();
         }
       }
     };
@@ -485,12 +500,12 @@ export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, o
       <header className="h-14 bg-[#1e293f]/95 backdrop-blur border-b border-[#687fe0]/30 px-4 flex items-center justify-between z-20">
         <div className="flex items-center space-x-3">
           <button
-            onClick={onClose}
+            onClick={handleHome}
             className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white/10 hover:bg-[#687fe0] text-white transition-all text-xs font-bold border border-white/10"
-            title="홈으로 나가기 (ESC)"
+            title={homeUrl ? 'create.allforedu.kr 홈으로 이동 (ESC)' : '홈으로 가기 (ESC)'}
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="hidden sm:inline">홈으로 나가기</span>
+            <span className="hidden sm:inline">홈으로 가기</span>
           </button>
 
           <div className="h-4 w-px bg-white/15 hidden sm:block" />
@@ -584,10 +599,10 @@ export const FlipBookViewer: React.FC<FlipBookViewerProps> = ({ pdfUrl, title, o
             <div className="bg-[#ffedf3] border border-[#ff6b9d] rounded-[20px] p-6 max-w-md shadow-2xl">
               <p className="text-[#e06b98] text-xs font-bold mb-4">{error}</p>
               <button
-                onClick={onClose}
+                onClick={handleHome}
                 className="px-4 py-2 bg-[#687fe0] hover:bg-[#566ecf] text-white rounded-xl text-xs font-bold transition"
               >
-                홈으로 나가기
+                홈으로 가기
               </button>
             </div>
           </div>

@@ -45,6 +45,19 @@ export const ViewerPage: React.FC = () => {
     };
   }, [id, navigate]);
 
+  const isGuideBook =
+    id === 'create-doc-1' ||
+    book?.category === '수업설계 길잡이' ||
+    (book?.title ? (book.title.includes('길잡이') || book.title.includes('수업설계')) : false);
+
+  const handleHome = () => {
+    if (isGuideBook) {
+      window.location.href = 'https://create.allforedu.kr';
+    } else {
+      navigate('/');
+    }
+  };
+
   if (loading) {
     return (
       <div className="fixed inset-0 bg-[#1E1D1B] flex flex-col items-center justify-center text-white">
@@ -61,10 +74,10 @@ export const ViewerPage: React.FC = () => {
         <h2 className="text-lg font-bold mb-1">도서를 열 수 없습니다</h2>
         <p className="text-xs text-neutral-400 mb-6">{error || '정보를 찾을 수 없습니다.'}</p>
         <button
-          onClick={() => navigate('/')}
+          onClick={handleHome}
           className="px-4 py-2 bg-stone-800 hover:bg-stone-700 text-white rounded-xl text-xs font-semibold"
         >
-          홈으로 나가기
+          홈으로 가기
         </button>
       </div>
     );
@@ -74,7 +87,9 @@ export const ViewerPage: React.FC = () => {
     <FlipBookViewer
       pdfUrl={pdfUrl}
       title={book.title}
-      onClose={() => navigate('/')}
+      onClose={handleHome}
+      homeUrl={isGuideBook ? 'https://create.allforedu.kr' : undefined}
+      isGuide={isGuideBook}
     />
   );
 };
